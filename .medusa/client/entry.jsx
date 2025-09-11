@@ -3,7 +3,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 
-
+import plugin0 from "@medusajs/draft-order/admin"
 
 let root = null
 
@@ -14,7 +14,7 @@ if (!root) {
 
 root.render(
   <React.StrictMode>
-    <App plugins={[]} />
+    <App plugins={[plugin0]} />
   </React.StrictMode>
 )
 

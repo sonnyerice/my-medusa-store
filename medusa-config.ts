@@ -26,6 +26,31 @@ export default defineConfig({
             id: "stripe",
             options: {
               apiKey: process.env.STRIPE_API_KEY,
+              webhookSecret: process.env.STRIPE_WEBHOOK_SECRET
+            },
+          },
+        ],
+      },
+    },
+    {  
+      resolve: "@medusajs/medusa/notification",
+      options: {
+        providers: [
+          {
+            resolve: "@perseidesjs/notification-nodemailer/providers/nodemailer",
+            id: "nodemailer",
+            options: {
+              channels: ["email"],
+              from: process.env.NOTIFICATION_PROVIDER_FROM,
+              host: process.env.SMTP_HOST,
+              port: Number(process.env.SMTP_PORT),
+              secure: process.env.SMTP_SECURE === "true",
+              requireTLS: process.env.SMTP_REQUIRE_TLS === "true",
+              auth: {
+                user: process.env.SMTP_USER,
+                pass: process.env.SMTP_PASS
+              }
+              // tls: { rejectUnauthorized: false } // solo si tu SMTP usa cert self-signed
             },
           },
         ],

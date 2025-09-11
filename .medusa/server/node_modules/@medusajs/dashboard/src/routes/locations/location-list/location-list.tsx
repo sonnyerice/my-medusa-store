@@ -1,4 +1,4 @@
-import { ShoppingBag } from "@medusajs/icons"
+import { ShoppingBag, TruckFast } from "@medusajs/icons"
 import { Container, Heading } from "@medusajs/ui"
 import { useTranslation } from "react-i18next"
 import { useLoaderData } from "react-router-dom"
@@ -76,6 +76,14 @@ const LinksSection = () => {
           "stockLocations.sidebar.shippingProfiles.description"
         )}
         icon={<ShoppingBag />}
+      />
+      <SidebarLink
+        to="/settings/locations/shipping-option-types"
+        labelKey={t("stockLocations.sidebar.shippingOptionTypes.label")}
+        descriptionKey={t(
+          "stockLocations.sidebar.shippingOptionTypes.description"
+        )}
+        icon={<TruckFast />}
       />
     </Container>
   )
