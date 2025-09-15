@@ -30,7 +30,7 @@ export const CreatePromotionSchema = z
     is_tax_inclusive: z.boolean().optional(),
     application_method: z.object({
       allocation: z.enum(["each", "across"]),
-      value: z.number().min(0),
+      value: z.number().min(0).or(z.string().min(1)),
       currency_code: z.string().optional(),
       max_quantity: z.number().optional().nullable(),
       target_rules: RuleSchema,

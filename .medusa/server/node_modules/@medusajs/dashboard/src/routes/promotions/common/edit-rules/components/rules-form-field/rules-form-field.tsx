@@ -1,7 +1,7 @@
 import { XMarkMini } from "@medusajs/icons"
 import { PromotionDTO } from "@medusajs/types"
 import { Badge, Button, Heading, IconButton, Select, Text } from "@medusajs/ui"
-import { forwardRef, Fragment, useEffect } from "react"
+import { forwardRef, Fragment, useEffect, useRef } from "react"
 import {
   ControllerRenderProps,
   useFieldArray,
@@ -29,6 +29,7 @@ type RulesFormFieldType = {
     | "application_method.buy_rules"
     | "rules"
     | "application_method.target_rules"
+  formType?: "create" | "edit"
 }
 
 export const RulesFormField = ({
@@ -38,7 +39,10 @@ export const RulesFormField = ({
   rulesToRemove,
   scope = "rules",
   promotion,
+  formType = "create",
 }: RulesFormFieldType) => {
+  const initialRulesSet = useRef(false)
+
   const { t } = useTranslation()
   const formData = form.getValues()
   const { attributes } = usePromotionRuleAttributes(
@@ -93,6 +97,14 @@ export const RulesFormField = ({
       return
     }
 
+    /**
+     * This effect sets rules after mount but since it is reused in create and edit flows, prevent this hook from recreating rules
+     * when fields are intentionally set to empty (e.g. "Clear all" is pressed).
+     */
+    if (!fields.length && formType === "edit" && initialRulesSet.current) {
+      return
+    }
+
     if (ruleType === "rules" && !fields.length) {
       form.resetField("rules")
 
@@ -118,11 +130,14 @@ export const RulesFormField = ({
 
       replace(generateRuleAttributes(rulesToAppend) as any)
     }
+
+    initialRulesSet.current = true
   }, [
     promotionType,
     isLoading,
     ruleType,
     fields.length,
+    formType,
     form,
     replace,
     rules,

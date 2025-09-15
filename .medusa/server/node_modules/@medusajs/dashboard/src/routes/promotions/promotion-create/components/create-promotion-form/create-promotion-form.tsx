@@ -36,7 +36,10 @@ import {
 import { KeyboundForm } from "../../../../../components/utilities/keybound-form"
 import { useCampaigns } from "../../../../../hooks/api/campaigns"
 import { useCreatePromotion } from "../../../../../hooks/api/promotions"
-import { getCurrencySymbol } from "../../../../../lib/data/currencies"
+import {
+  currencies,
+  getCurrencySymbol,
+} from "../../../../../lib/data/currencies"
 import { DEFAULT_CAMPAIGN_VALUES } from "../../../../campaigns/common/constants"
 import { RulesFormField } from "../../../common/edit-rules/components/rules-form-field"
 import { AddCampaignPromotionFields } from "../../../promotion-add-campaign/components/add-campaign-promotion-form"
@@ -142,6 +145,7 @@ export const CreatePromotionForm = () => {
           application_method: {
             ...applicationMethodData,
             ...applicationMethodRuleData,
+            value: parseFloat(applicationMethodData.value as string) as number,
             target_rules: buildRulesData(targetRulesData),
             buy_rules: buildRulesData(buyRulesData),
           },
@@ -288,6 +292,7 @@ export const CreatePromotionForm = () => {
   })
 
   const isTypeStandard = watchType === "standard"
+  const isTypeBuyGet = watchType === "buyget"
 
   const targetType = useWatch({
     control: form.control,
@@ -741,6 +746,9 @@ export const CreatePromotionForm = () => {
                           const currencyCode =
                             form.getValues().application_method.currency_code
 
+                          const currencyInfo =
+                            currencies[currencyCode?.toUpperCase() || "USD"]
+
                           return (
                             <Form.Item className="basis-1/2">
                               <Form.Label
@@ -758,10 +766,16 @@ export const CreatePromotionForm = () => {
                                   <CurrencyInput
                                     {...field}
                                     min={0}
-                                    onValueChange={(value) => {
-                                      onChange(value ? parseInt(value) : "")
-                                    }}
                                     code={currencyCode || "USD"}
+                                    onValueChange={(_value, _name, values) =>
+                                      onChange(values?.value)
+                                    }
+                                    decimalScale={
+                                      currencyInfo?.decimal_digits ?? 2
+                                    }
+                                    decimalsLimit={
+                                      currencyInfo?.decimal_digits ?? 2
+                                    }
                                     symbol={
                                       currencyCode
                                         ? getCurrencySymbol(currencyCode)
@@ -782,7 +796,7 @@ export const CreatePromotionForm = () => {
                                       onChange(
                                         e.target.value === ""
                                           ? null
-                                          : parseInt(e.target.value)
+                                          : parseFloat(e.target.value)
                                       )
                                     }}
                                   />
@@ -811,44 +825,52 @@ export const CreatePromotionForm = () => {
                     </>
                   )}
 
-                  {isTypeStandard && watchAllocation === "each" && (
-                    <Form.Field
-                      control={form.control}
-                      name="application_method.max_quantity"
-                      render={({ field }) => {
-                        return (
-                          <Form.Item className="basis-1/2">
-                            <Form.Label>
-                              {t("promotions.form.max_quantity.title")}
-                            </Form.Label>
+                  {((isTypeStandard && watchAllocation === "each") ||
+                    isTypeBuyGet) && (
+                    <>
+                      {isTypeBuyGet && (
+                        <>
+                          <Divider />
+                        </>
+                      )}
+                      <Form.Field
+                        control={form.control}
+                        name="application_method.max_quantity"
+                        render={({ field }) => {
+                          return (
+                            <Form.Item className="basis-1/2">
+                              <Form.Label>
+                                {t("promotions.form.max_quantity.title")}
+                              </Form.Label>
 
-                            <Form.Control>
-                              <Input
-                                {...form.register(
-                                  "application_method.max_quantity",
-                                  { valueAsNumber: true }
-                                )}
-                                type="number"
-                                min={1}
-                                placeholder="3"
-                              />
-                            </Form.Control>
+                              <Form.Control>
+                                <Input
+                                  {...form.register(
+                                    "application_method.max_quantity",
+                                    { valueAsNumber: true }
+                                  )}
+                                  type="number"
+                                  min={1}
+                                  placeholder="3"
+                                />
+                              </Form.Control>
 
-                            <Text
-                              size="small"
-                              leading="compact"
-                              className="text-ui-fg-subtle"
-                            >
-                              <Trans
-                                t={t}
-                                i18nKey="promotions.form.max_quantity.description"
-                                components={[<br key="break" />]}
-                              />
-                            </Text>
-                          </Form.Item>
-                        )
-                      }}
-                    />
+                              <Text
+                                size="small"
+                                leading="compact"
+                                className="text-ui-fg-subtle"
+                              >
+                                <Trans
+                                  t={t}
+                                  i18nKey="promotions.form.max_quantity.description"
+                                  components={[<br key="break" />]}
+                                />
+                              </Text>
+                            </Form.Item>
+                          )
+                        }}
+                      />
+                    </>
                   )}
 
                   {isTypeStandard &&

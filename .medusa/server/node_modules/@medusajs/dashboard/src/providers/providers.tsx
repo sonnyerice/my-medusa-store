@@ -9,7 +9,6 @@ import { ExtensionProvider } from "./extension-provider"
 import { I18nProvider } from "./i18n-provider"
 import { ThemeProvider } from "./theme-provider"
 import { FeatureFlagProvider } from "./feature-flag-provider"
-
 type ProvidersProps = PropsWithChildren<{
   api: DashboardApp["api"]
 }>
