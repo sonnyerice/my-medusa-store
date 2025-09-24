@@ -26,7 +26,9 @@ export default defineConfig({
             id: "stripe",
             options: {
               apiKey: process.env.STRIPE_API_KEY,
-              webhookSecret: process.env.STRIPE_WEBHOOK_SECRET
+              webhookSecret: process.env.STRIPE_WEBHOOK_SECRET,
+              automatic_payment_methods: process.env.STRIPE_AUTOMATIC_PAYMENT_METHODS === "true",
+              capture: process.env.STRIPE_CAPTURE === "true",
             },
           },
         ],
@@ -50,7 +52,6 @@ export default defineConfig({
                 user: process.env.SMTP_USER,
                 pass: process.env.SMTP_PASS
               }
-              // tls: { rejectUnauthorized: false } // solo si tu SMTP usa cert self-signed
             },
           },
         ],
